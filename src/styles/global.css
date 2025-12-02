@@ -23,12 +23,12 @@
     @apply cursor-default;
   }
   html {
-    @apply h-full text-[16px];
+    @apply h-full text-[20px];
   }
 
   @media (min-width: 1024px) {
     html {
-      @apply text-[17px];
+      @apply text-[18px];
     }
   }
 

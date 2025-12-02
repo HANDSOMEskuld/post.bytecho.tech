@@ -1,0 +1,68 @@
+<div class="giscus mt-10"></div>
+
+<script is:inline>
+  // 获取当前适合 Giscus 的主题
+  function getGiscusTheme() {
+    const currentTheme = document.documentElement.getAttribute("data-theme");
+    // 如果网站是暗黑模式，使用 transparent_dark（透明背景，融合度高）
+    // 如果是亮色模式，使用 light
+    return currentTheme === "dark" ? "transparent_dark" : "light";
+  }
+
+  // 更新 Giscus 主题的函数
+  function setGiscusTheme() {
+    const iframe = document.querySelector('iframe.giscus-frame');
+    if (!iframe) return;
+    const theme = getGiscusTheme();
+    iframe.contentWindow.postMessage(
+      { giscus: { setConfig: { theme } } },
+      'https://giscus.app'
+    );
+  }
+
+  // 页面加载时初始化 Giscus
+  function loadGiscus() {
+    const container = document.querySelector('.giscus');
+    // 防止重复加载
+    if (!container || container.querySelector('script')) return;
+
+    const script = document.createElement('script');
+    script.src = "https://giscus.app/client.js";
+    script.setAttribute("data-repo", "HANDSOMEskuld/blog-comments");
+    script.setAttribute("data-repo-id", "R_kgDOQfZ-gg");
+    script.setAttribute("data-category", "Announcements");
+    script.setAttribute("data-category-id", "DIC_kwDOQfZ-gs4CzMN6");
+    script.setAttribute("data-mapping", "url");
+    script.setAttribute("data-strict", "0");
+    script.setAttribute("data-reactions-enabled", "1");
+    script.setAttribute("data-emit-metadata", "0");
+    script.setAttribute("data-input-position", "bottom");
+    script.setAttribute("data-lang", "en");
+    script.setAttribute("crossorigin", "anonymous");
+    script.async = true;
+    
+    // 关键点：动态设置初始主题
+    script.setAttribute("data-theme", getGiscusTheme());
+
+    container.appendChild(script);
+  }
+
+  // 监听 Astro 页面加载事件（支持 View Transitions）
+  document.addEventListener('astro:page-load', () => {
+    loadGiscus();
+
+    // 创建观察者来监听 html 标签上的 data-theme 变化
+    const observer = new MutationObserver((mutations) => {
+      mutations.forEach((mutation) => {
+        if (mutation.type === 'attributes' && mutation.attributeName === 'data-theme') {
+          setGiscusTheme();
+        }
+      });
+    });
+
+    observer.observe(document.documentElement, {
+      attributes: true,
+      attributeFilter: ['data-theme']
+    });
+  });
+</script>
