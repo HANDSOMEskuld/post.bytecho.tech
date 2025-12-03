@@ -3,7 +3,8 @@ import BaseLayout from "@/layouts/base.astro";
 import { getEntry } from "astro:content";
 import Headlines from "@/pages/_home/headlines.astro";
 import LatestNews from "@/pages/_home/latestNews.astro";
-import Authors from "@/pages/_home/authors.astro";
+// 1. 引入新组件
+import CategorySection from "@/pages/_home/categorySection.astro";
 
 const entry = await getEntry("views", "home");
 
@@ -14,6 +15,32 @@ if (!entry) {
 
 <BaseLayout entry={entry}>
   <Headlines />
+  
+  {/* 最新文章（保留原有的） */}
   <LatestNews />
-  <Authors />
+
+  {/* 2. 在这里添加你的分类版块，替代原来的 Authors */}
+  
+  {/* 例如：显示 Technology 分类的 3 篇文章 */}
+  <CategorySection 
+    title="Technology" 
+    categoryId="technology" 
+    count={3} 
+  />
+
+  {/* 例如：显示 Programming 分类的 3 篇文章 */}
+  <CategorySection 
+    title="Coding Tutorials" 
+    categoryId="programming" 
+    count={3} 
+  />
+  
+  {/* 你刚才新建的 Teaching 分类 */}
+  <CategorySection 
+    title="Teaching Resources" 
+    categoryId="teaching" 
+    count={3} 
+  />
+{/* 👇 方法：在两个组件之间加一个带 margin 的 div，或者直接包一层 */}
+  <div class="mt-12 md:mt-20">
 </BaseLayout>
