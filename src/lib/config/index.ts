@@ -19,10 +19,6 @@ export const NAVIGATION_LINKS: Link[] = [
     text: "Technology",
   },
   {
-    href: "/categories/teaching", 
-    text: "Teaching",             
-  },
-  {
     href: "/categories/programming",
     text: "Programming",
   },

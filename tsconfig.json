@@ -10,9 +10,12 @@
   "compilerOptions": {
     "baseUrl": ".",
     "paths": {
-      "@/*": ["src/*"],
-      "@assets/*": ["src/assets/*"],
-      "@content/*": ["src/content/*"] // 👈 新增这一行
+      "@/*": [
+        "src/*"
+      ],
+      "@assets/*": [
+        "src/assets/*"
+      ]
     },
     "jsx": "react-jsx",
     "jsxImportSource": "react"
