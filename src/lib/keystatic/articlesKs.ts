@@ -61,9 +61,10 @@ export const articlesKs = collection({
       }
     ),
 
-    // MDX 内部所有上传图片将自动存到 {slug}/ 目录
+ // 修改部分：配置 options 以实现图片同级存储
     content: fields.mdx({
-      label: "Content",
+      label: "1",
+      path: "src/content/articles/*/",
     }),
   },
 });
