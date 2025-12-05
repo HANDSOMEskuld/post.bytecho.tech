@@ -4,7 +4,6 @@ import "@pagefind/default-ui/css/ui.css";
 import { getEntry } from "astro:content";
 
 const entry = await getEntry("views", "search");
-
 if (!entry) {
   return Astro.redirect("/404");
 }
@@ -12,7 +11,8 @@ if (!entry) {
 
 <BaseLayout entry={entry}>
   <div class="container py-4">
-    <script is:inline src="/pagefind/pagefind-ui.js"></script>
+    {/* 🔴 删除：这一行是多余的，会造成冲突。我们已经通过下方的 import 加载了 UI */}
+    {/* <script is:inline src="/pagefind/pagefind-ui.js"></script> */}
 
     <div id="search"></div>
 
@@ -33,12 +33,15 @@ if (!entry) {
               showSubResults: true,
               showImages: false,
               autofocus: true,
+              // 强制指定 bundle 路径，防止 dev 模式下路径错误
+              bundlePath: "/pagefind/",
             });
 
+            // 这里的逻辑用于处理 URL 参数回填和清空按钮
             const el = document.querySelector(".pagefind-ui");
-            const input =
-              el?.querySelector<HTMLInputElement>(`input[type="text"]`);
+            const input = el?.querySelector("input[type=\"text\"]");
             const clearButton = el?.querySelector(".pagefind-ui__search-clear");
+            
             const url = new URL(window.location.href);
             const params = new URLSearchParams(url.search);
             const query = params.get("q");
@@ -46,16 +49,23 @@ if (!entry) {
             if (clearButton) {
               clearButton.textContent = "× Clear";
             }
+            // 如果 URL 中有查询参数，自动填入搜索框并触发搜索
             if (query && input) {
+              // @ts-ignore
               input.value = query;
               input.dispatchEvent(new Event("input", { bubbles: true }));
             }
 
             input?.addEventListener("input", (e) => {
-              const input = e.target as HTMLInputElement;
+              // @ts-ignore
+              const val = e.target.value;
               const url = new URL(window.location.href);
               const params = new URLSearchParams(url.search);
-              params.set("q", input.value);
+              if (val) {
+                params.set("q", val);
+              } else {
+                params.delete("q");
+              }
               window.history.replaceState({}, "", `${url.pathname}?${params}`);
             });
 
@@ -69,6 +79,7 @@ if (!entry) {
           .catch(console.error);
       };
 
+      // 支持 View Transitions 的初始化
       document.addEventListener("astro:page-load", () => {
         initializePagefind();
       });
@@ -77,6 +88,7 @@ if (!entry) {
 </BaseLayout>
 
 <style is:inline>
+  /* 保持原有样式不变 */
   :root {
     --pagefind-ui-scale: 0.9;
     --pagefind-ui-primary: oklch(var(--p));
@@ -93,6 +105,7 @@ if (!entry) {
 </style>
 
 <style is:global>
+  /* 保持原有样式不变 */
   .pagefind-ui__result.svelte-4xnkmf {
     padding: 0.75rem 1rem;
     border-bottom: 1px solid #eee;

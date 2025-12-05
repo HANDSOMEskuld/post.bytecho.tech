@@ -15,6 +15,10 @@
       ],
       "@assets/*": [
         "src/assets/*"
+      ],
+      // 添加这一行 👇
+      "@content/*": [
+        "src/content/*"
       ]
     },
     "jsx": "react-jsx",

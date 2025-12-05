@@ -18,26 +18,17 @@ export const NAVIGATION_LINKS: Link[] = [
     href: "/categories/technology",
     text: "Technology",
   },
+
+  // 在这里添加或修改你的分类
   {
-    href: "/categories/programming",
-    text: "Programming",
+    href: "/categories/teaching",  // 示例：新添加的分类
+    text: "Teaching",
   },
   {
-    href: "/categories/lifestyle",
-    text: "Lifestyle",
+    href: "/categories/investment", // 示例：新添加的分类
+    text: "Investment",
   },
-  {
-    href: "/categories/productivity",
-    text: "Productivity",
-  },
-  {
-    href: "/categories/health",
-    text: "Health",
-  },
-  {
-    href: "/categories/finance",
-    text: "Finance",
-  },
+
 ];
 
 export const OTHER_LINKS: Link[] = [

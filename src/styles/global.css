@@ -9,7 +9,7 @@
 @custom-variant dark (&:where([data-theme=dark], [data-theme=dark] *));
 
 @theme {
-  /* Font Family */
+  /* Font Family - 保持原有设定 */
   --font-sans: "Source Sans Pro", ui-sans-serif, system-ui, sans-serif,
     "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
   --font-serif: "Source Serif 4 Variable", ui-serif, Georgia, Cambria,
@@ -22,30 +22,40 @@
   :root {
     @apply cursor-default;
   }
+  
   html {
-    @apply h-full text-[20px];
-  }
-
-  @media (min-width: 1024px) {
-    html {
-      @apply text-[18px];
-    }
+    /* 优化基础字体大小：移动端16px，桌面端18px，增加平滑滚动 */
+    @apply h-full text-[16px] md:text-[18px] scroll-smooth;
   }
 
   body {
-    @apply font-sans antialiased h-full;
+    /* 增加文本抗锯齿，使字体在高分屏更清晰 */
+    @apply font-sans antialiased h-full text-base-content/90 leading-relaxed;
   }
 
-  h1,
+  /* 优化标题排版 */
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-serif font-bold text-base-content tracking-tight;
+  }
+
+  h1 {
+    @apply text-3xl md:text-4xl lg:text-5xl mb-6;
+  }
+
   h2 {
-    @apply font-serif;
+    @apply text-2xl md:text-3xl mb-4;
   }
 
+  /* 辅助信息字体优化 */
   small,
   time {
-    @apply text-sm;
+    @apply text-sm text-base-content/70;
   }
+
+  /* 文章内容区的优化 */
   .prose {
+    @apply max-w-none; /* 防止文章内容过窄 */
+    
     pre {
       code {
         span,
@@ -54,12 +64,17 @@
         }
       }
     }
+    
+    /* 优化链接样式 */
+    a {
+      @apply decoration-primary/30 hover:decoration-primary transition-colors;
+    }
   }
 }
 
 @utility container {
   margin-inline: auto;
-  padding-inline: 1rem;
+  padding-inline: 1.5rem; /* 增加左右内边距，避免内容贴边 */
   @media (max-width: 640px) {
     max-width: none;
   }
@@ -70,6 +85,6 @@
 
 @layer components {
   .a-01 {
-    @apply hover:underline decoration-primary;
+    @apply hover:underline decoration-primary underline-offset-4 decoration-2; /* 优化链接下划线样式 */
   }
 }

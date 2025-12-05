@@ -4,8 +4,13 @@ import BaseLayout from "@/layouts/base.astro";
 import ContentLayout from "@/layouts/content.astro";
 import ArticleHeader from "./_components/article-header.astro";
 import { articlesHandler } from "@/lib/handlers/articles";
-// 1. 引入 Giscus 组件
+// 引入 Giscus 组件
 import Giscus from "@/components/Giscus.astro";
+// 引入新组件
+import BackToTop from "@/components/elements/back-to-top.astro";
+import BuyMeCoffee from "@/components/elements/buy-me-coffee.astro";
+import NewsCard from "@/components/cards/newsCard.astro";
+import Divider from "@/components/bases/divider.astro";
 
 export const getStaticPaths = async () => {
   const articles = articlesHandler.allArticles();
@@ -14,9 +19,19 @@ export const getStaticPaths = async () => {
     props: { article },
   }));
 };
-const { article } = Astro.props;
 
+const { article } = Astro.props;
 const { Content, remarkPluginFrontmatter } = await render(article);
+
+// --- 获取相关文章逻辑 ---
+const allArticles = articlesHandler.allArticles();
+const relatedArticles = allArticles
+  .filter(
+    (a) =>
+      a.data.category.id === article.data.category.id && // 相同分类
+      a.id !== article.id // 排除当前文章
+  )
+  .slice(0, 3); // 限制显示3篇
 ---
 
 <BaseLayout entry={article}>
@@ -24,8 +39,36 @@ const { Content, remarkPluginFrontmatter } = await render(article);
     article={article}
     readingTime={remarkPluginFrontmatter.minutesRead}
   />
+  
   <ContentLayout>
     <Content />
-    <Giscus />
+    
+    {/* 3. 打赏按钮 (放在文章内容结束处) */}
+    <BuyMeCoffee />
   </ContentLayout>
+
+  {/* 2. 相关推荐 (放在 ContentLayout 外部以获得更宽的布局，但在评论区之前) */}
+  {relatedArticles.length > 0 && (
+    <section class="container max-w-5xl py-8 border-t border-base-300">
+      <h3 class="text-2xl font-bold mb-6 flex items-center gap-2">
+        Read Next
+        <span class="text-sm font-normal text-base-content/60 bg-base-200 px-2 py-1 rounded-full">
+          More in {article.data.category.id}
+        </span>
+      </h3>
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+        {relatedArticles.map((relatedArticle, index) => (
+          <NewsCard article={relatedArticle} index={index} />
+        ))}
+      </div>
+    </section>
+  )}
+
+  {/* 评论区 (放在最后) */}
+  <div class="container max-w-5xl pb-12">
+    <Giscus />
+  </div>
+
+  {/* 1. 回到顶部按钮 (全局位置) */}
+  <BackToTop />
 </BaseLayout>

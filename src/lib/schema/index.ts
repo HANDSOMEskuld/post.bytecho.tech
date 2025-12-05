@@ -8,8 +8,9 @@ export const articleSchema = (image: ImageFunction) =>
     isSubHeadline: z.boolean().default(false),
     cover: image(),
     covert_alt: z.string().optional(),
-    title: z.string().max(60, "Too long, max 60 characters"),
-    description: z.string().max(160, "Too long, max 160 characters"),
+    // 修改下面两行：放宽字符限制
+    title: z.string().max(120, "Too long, max 120 characters"), 
+    description: z.string().max(320, "Too long, max 320 characters"),
     category: reference("categories"),
     authors: z.array(reference("authors")).min(1),
     publishedTime: z.string().datetime().or(z.date()),
@@ -45,12 +46,3 @@ export const authorSchema = (Image: ImageFunction) =>
       })
     ),
   });
-
-// avatar: Image().refine(
-//   (img) => {
-//       const isValidWidth = img.width > 100 && img.width < 2000;
-//       const isValidHeight = img.height > 100 && img.height < 2000;
-//       return isValidWidth && isValidHeight;
-//   },
-//   "Avatar image must have width and height between 100 and 2000"
-// ),

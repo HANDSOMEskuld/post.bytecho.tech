@@ -2,8 +2,9 @@
   // Optimized event attachment function
   function attachSocialShareEvents() {
     const shareButtons = document.querySelectorAll("[data-aw-social-share]");
-
     shareButtons.forEach((elem) => {
+      // 防止重复绑定，先移除旧的（可选，但在某些复杂场景下是个好习惯）
+      elem.removeEventListener("click", handleSocialShare); 
       elem.addEventListener("click", handleSocialShare, false);
     });
   }
@@ -43,7 +44,7 @@
         .writeText(text)
         .then(() => {
           console.log("Text successfully copied to clipboard");
-          // Optional: Show a brief success indicator
+          alert("Link copied to clipboard!"); // 建议加一个简单的用户反馈
         })
         .catch((err) => {
           console.error("Unable to copy text to clipboard", err);
@@ -65,7 +66,6 @@
       linkedin: `https://www.linkedin.com/shareArticle?mini=true&url=${url}&title=${text}`,
       whatsapp: `https://wa.me/?text=${text}%20${url}`,
     };
-
     const href = platformUrls[network];
     if (href) {
       // Use window.open for better popup handling
@@ -87,10 +87,10 @@
     document.body.appendChild(textArea);
     textArea.focus();
     textArea.select();
-
     try {
       document.execCommand("copy");
       console.log("Fallback: Text copied to clipboard");
+      alert("Link copied to clipboard!");
     } catch (err) {
       console.error("Fallback: Unable to copy text to clipboard", err);
     }
@@ -98,10 +98,10 @@
     document.body.removeChild(textArea);
   }
 
-  // Use DOMContentLoaded for faster execution than window.onload
-  if (document.readyState === "loading") {
-    document.addEventListener("DOMContentLoaded", attachSocialShareEvents);
-  } else {
+  // --- 修改的部分开始 ---
+  // 监听 Astro 的页面加载事件，确保在视图转换后重新绑定事件
+  document.addEventListener("astro:page-load", () => {
     attachSocialShareEvents();
-  }
+  });
+  // --- 修改的部分结束 ---
 </script>

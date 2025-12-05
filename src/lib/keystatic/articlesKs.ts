@@ -3,8 +3,6 @@ import { collection, fields } from "@keystatic/core";
 export const articlesKs = collection({
   label: "Articles",
   slugField: "title",
-
-  // 每篇文章使用文件夹：src/content/articles/{slug}/index.mdx
   path: "src/content/articles/*/",
   format: { contentField: "content" },
   entryLayout: "form",
@@ -22,16 +20,18 @@ export const articlesKs = collection({
       label: "Is this a sub headline?",
       defaultValue: false,
     }),
+    // 修改这里：增加 max 长度
     description: fields.text({
       label: "Description",
-      validation: { isRequired: true, length: { max: 160 } },
+      validation: { isRequired: true, length: { max: 320 } },
+      multiline: true, // 建议开启多行，方便编辑长描述
     }),
 
+    // 修改这里：增加 max 长度
     title: fields.slug({
-      name: { label: "Title", validation: { length: { max: 60 } } },
+      name: { label: "Title", validation: { length: { max: 120 } } },
     }),
 
-    // 封面图将直接保存在 slug 目录下
     cover: fields.image({
       label: "Cover",
       validation: { isRequired: false },
@@ -61,10 +61,14 @@ export const articlesKs = collection({
       }
     ),
 
- // 修改部分：配置 options 以实现图片同级存储
     content: fields.mdx({
-      label: "1",
-      path: "src/content/articles/*/",
+      label: "Content",
+      options: {
+        image: {
+          directory: "src/content/articles",
+          publicPath: "@content/articles/",
+        },
+      },
     }),
   },
 });
