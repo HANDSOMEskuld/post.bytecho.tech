@@ -21,6 +21,7 @@ if (RUN_KEYSTATIC === "true") {
 
 // https://astro.build/config
 export default defineConfig({
+  output: 'static',
   site: SITE.url,
   base: SITE.basePath,
   markdown: {
