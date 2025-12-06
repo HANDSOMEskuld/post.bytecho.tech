@@ -1,6 +1,7 @@
 @import "tailwindcss";
 @plugin "@tailwindcss/typography";
 @plugin "daisyui" {
+  /* 加载默认主题，但在下面我们会覆盖它们 */
   themes: light --default, dark --prefersdark;
   root: ":root";
   logs: false;
@@ -8,32 +9,69 @@
 
 @custom-variant dark (&:where([data-theme=dark], [data-theme=dark] *));
 
+/* 1. Tailwind 配置层 (@theme)
+  这里控制 text-primary, bg-secondary 等 utility 类生成的颜色。
+  我们直接使用 HEX 值，确保这些类名 100% 变为绿色。
+*/
 @theme {
-  /* Font Family - 保持原有设定 */
   --font-sans: "Source Sans Pro", ui-sans-serif, system-ui, sans-serif,
     "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
   --font-serif: "Source Serif 4 Variable", ui-serif, Georgia, Cambria,
     "Times New Roman", Times, serif;
 
   --breakpoint-2xl: initial;
+
+  /* 强制将 Primary (主色) 设为绿色 */
+  --color-primary: #03a740;
+  --color-primary-content: #ffffff;
+  
+  /* 关键：强制将 Secondary (次色) 也设为绿色 */
+  /* 这样代码里的 dark:text-secondary 就不会变成紫色了 */
+  --color-secondary: #03a740;
+  --color-secondary-content: #ffffff;
 }
 
+/* 2. CSS 变量层 (@layer base)
+  这里控制 DaisyUI 组件（如 .btn, .checkbox）的颜色。
+  我们使用更高权重的选择器来确保覆盖默认主题。
+*/
 @layer base {
-  :root {
+  /* 使用 :root, html, body 增加权重，确保覆盖 DaisyUI 默认注入的样式 */
+  :root,
+  html,
+  body,
+  [data-theme] {
+    /* 定义 OKLCH 颜色值 (#03a740 转换后的精确值)
+       DaisyUI 5 内部计算依赖这些变量
+    */
+    
+    /* 设置 Primary 为绿色 */
+    --primary: oklch(60% 0.198 147.4);
+    --primary-content: oklch(100% 0 0);
+    
+    /* 设置 Secondary 也为绿色 (消灭紫色) */
+    --secondary: oklch(60% 0.198 147.4);
+    --secondary-content: oklch(100% 0 0);
+
+    /* 兼容性变量：DaisyUI 旧版或某些内部计算可能需要纯数值 */
+    --p: 0.6 0.198 147.4;
+    --s: 0.6 0.198 147.4;
+    
+    /* 这里的 content 变量对应上面的文本颜色 */
+    --pc: 1 0 0;
+    --sc: 1 0 0;
+    
     @apply cursor-default;
   }
   
   html {
-    /* 优化基础字体大小：移动端16px，桌面端18px，增加平滑滚动 */
     @apply h-full text-[16px] md:text-[18px] scroll-smooth;
   }
 
   body {
-    /* 增加文本抗锯齿，使字体在高分屏更清晰 */
     @apply font-sans antialiased h-full text-base-content/90 leading-relaxed;
   }
 
-  /* 优化标题排版 */
   h1, h2, h3, h4, h5, h6 {
     @apply font-serif font-bold text-base-content tracking-tight;
   }
@@ -46,15 +84,13 @@
     @apply text-2xl md:text-3xl mb-4;
   }
 
-  /* 辅助信息字体优化 */
   small,
   time {
     @apply text-sm text-base-content/70;
   }
 
-  /* 文章内容区的优化 */
   .prose {
-    @apply max-w-none; /* 防止文章内容过窄 */
+    @apply max-w-none;
     
     pre {
       code {
@@ -65,7 +101,7 @@
       }
     }
     
-    /* 优化链接样式 */
+    /* 链接颜色修正 */
     a {
       @apply decoration-primary/30 hover:decoration-primary transition-colors;
     }
@@ -74,7 +110,7 @@
 
 @utility container {
   margin-inline: auto;
-  padding-inline: 1.5rem; /* 增加左右内边距，避免内容贴边 */
+  padding-inline: 1.5rem;
   @media (max-width: 640px) {
     max-width: none;
   }
@@ -85,6 +121,6 @@
 
 @layer components {
   .a-01 {
-    @apply hover:underline decoration-primary underline-offset-4 decoration-2; /* 优化链接下划线样式 */
+    @apply hover:underline decoration-primary underline-offset-4 decoration-2;
   }
 }

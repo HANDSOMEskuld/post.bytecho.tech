@@ -3,7 +3,7 @@ import { Image } from "astro:assets";
 import type { CollectionEntry } from "astro:content";
 import Divider from "@/components/bases/divider.astro";
 import { render } from "astro:content";
-import { getDateDistance } from "@/lib/utils/date";
+import { getDateDistance, normalizeDate } from "@/lib/utils/date"; // 1. 引入 normalizeDate
 import { categoriesHandler } from "@/lib/handlers/categories";
 
 type Props = {
@@ -12,7 +12,6 @@ type Props = {
   isLast?: boolean;
 };
 const { article, isLast, isFirst } = Astro.props;
-
 const { remarkPluginFrontmatter } = await render(article);
 const category = categoriesHandler.oneCategory(article.data.category.id);
 ---
@@ -41,10 +40,9 @@ const category = categoriesHandler.oneCategory(article.data.category.id);
       </div>
     </div>
     <div class="flex items-center text-xs text-base-content/80 mt-1 lg:mt-auto">
-      <span class="text-primary dark:text-secondary">{category.data.title}</span
-      >
+      <span class="text-primary dark:text-secondary">{category.data.title}</span>
       <Divider />
-      <span>{getDateDistance(remarkPluginFrontmatter.lastModified)}</span>
+      <span>{getDateDistance(normalizeDate(article.data.publishedTime))}</span>
     </div>
   </div>
 
